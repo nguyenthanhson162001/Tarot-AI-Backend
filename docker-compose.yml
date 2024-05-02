@@ -1,0 +1,62 @@
+services:
+  tarot-ai-dev:
+    container_name: tarot_ai_api_dev
+    image: tarot_ai-api-dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+      - 9229:9229
+    networks:
+      - tarot-ai-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+  tarot-ai-prod:
+    container_name: tarot_ai_api_prod
+    image: tarot_ai-api-prod:1.0.0
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    command: npm run start:prod
+    ports:
+      - 3000:3000
+      - 9229:9229
+    networks:
+      - tarot-ai-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    container_name: mongo_dba
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
+    ports:
+      - 27017:27017
+    networks:
+      - tarot-ai-network
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
+
+networks:
+  tarot-ai-network:
