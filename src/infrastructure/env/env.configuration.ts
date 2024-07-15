@@ -1,6 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
-import { plainToClass, plainToClassFromExist, plainToInstance, Transform, Type } from 'class-transformer'
-import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator'
+import { plainToClass, plainToClassFromExist, Transform, Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator';
 
 export class ENVConfig {
   @IsInt()
@@ -45,7 +45,7 @@ export class ENVConfig {
   static readonly SWAGGER_DESCRIPTION: string;
 
   @IsBoolean()
-  @Transform(({ value }: { value: string }) => value?.toLocaleLowerCase() == 'true')
+  @Type(() => Boolean)
   static readonly IS_SWAGGER_ENABLED: boolean;
 
   @IsArray()
@@ -58,21 +58,30 @@ export class ENVConfig {
   @IsNotEmpty()
   static readonly MONGODB_URI: string;
 
-  static validateAndLoad(config: Record<string, any>) {
-    const validatedConfig = plainToClassFromExist(
-      ENVConfig,
-      config,
-      { enableImplicitConversion: true },
-    );
-    const validation = validateSync(validatedConfig)
-    if (validation.length) {
-      throw new Error(JSON.stringify(validation))
+  static load(): Record<string, any> {
+    // convert process.env to plain object
+    const plainEnv = Object.keys(process.env).reduce((acc, key) => {
+      acc[key] = process.env[key];
+      return acc;
+    }, {});
+    plainToClassFromExist(ENVConfig, plainEnv, { enableImplicitConversion: true });
+    return ENVConfig
+  }
+
+  static validate(config: Record<string, any>): Record<string, any> {
+    // make a deep copy of class ENVConfig 
+    const validatedConfig = plainToClassFromExist(ENVConfig, config, { enableImplicitConversion: true });
+    const validation = validateSync(validatedConfig);
+    if (validation.length > 0) {
+      throw new Error(JSON.stringify(validation));
     }
-    return config
+
+    return config;
   }
 }
 
 export const ENVConfigModule = ConfigModule.forRoot({
   isGlobal: true,
-  validate: ENVConfig.validateAndLoad
+  load: [ENVConfig.load],
+  validate: ENVConfig.validate,
 });

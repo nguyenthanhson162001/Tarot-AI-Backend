@@ -1,4 +1,11 @@
-import { ICard } from './interfaces/card.interfaces'
+import { IEntity } from './entity.base'
+export interface ICard extends IEntity {
+  deskId: string
+  name: string
+  slug: string
+  avatarUrl: string
+  description: string
+}
 
 export class Card implements ICard {
   id: string

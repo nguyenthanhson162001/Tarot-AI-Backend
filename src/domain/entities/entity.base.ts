@@ -1,3 +1,9 @@
+export interface IEntity {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 export abstract class Entity<Props> {
   id: string
   createdAt: Date
