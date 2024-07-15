@@ -1,11 +1,11 @@
 
 import { Global, Module, Provider } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
-
+import { MongooseConfigModule } from './mongooes/mongooes.config'
+import { ENVConfigModule } from './env'
 const providers: Provider[] = []
-
 const imports = [
-  ConfigModule.forRoot()
+  ENVConfigModule,
+  MongooseConfigModule
 ]
 
 const exportsProviders = []

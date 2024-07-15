@@ -8,8 +8,8 @@ import * as morgan from 'morgan'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { RootModule } from '../modules/root.module'
 import { join } from 'path'
-import { ENVConfig } from 'src/infrastructure/configuration'
 import { Logger } from '@nestjs/common'
+import { ENVConfig } from 'src/infrastructure/env'
 
 export default class Server {
   private app: NestExpressApplication
