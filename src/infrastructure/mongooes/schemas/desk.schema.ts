@@ -3,12 +3,10 @@ import { HydratedDocument } from 'mongoose';
 import { BaseSchema } from './schema.base';
 import { IDesk } from 'src/domain/entities';
 
-export type DeskDocument = HydratedDocument<Desk>;
+export type DeskDocument = HydratedDocument<DeskSchema>;
 
 @Schema()
-class Desk extends BaseSchema implements IDesk {
-    @Prop({ type: String, required: true })
-    deskId: string;
+export class DeskSchema extends BaseSchema implements IDesk {
 
     @Prop({ type: String, required: true })
     name: string;
@@ -18,9 +16,6 @@ class Desk extends BaseSchema implements IDesk {
 
     @Prop({ type: String, required: true })
     avatarUrl: string;
-
-    @Prop({ type: String, required: true })
-    description: string;
 }
 
-export const DeskSchema = SchemaFactory.createForClass(Desk);
+SchemaFactory.createForClass(DeskSchema);

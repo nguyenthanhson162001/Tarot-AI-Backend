@@ -3,10 +3,10 @@ import { HydratedDocument } from 'mongoose';
 import { BaseSchema } from './schema.base';
 import { ICard } from 'src/domain/entities';
 
-export type CardDocument = HydratedDocument<Card>;
+export type CardDocument = HydratedDocument<CardSchema>;
 
 @Schema()
-class Card extends BaseSchema implements ICard {
+export class CardSchema extends BaseSchema implements ICard {
     @Prop({ type: String, required: true })
     deskId: string;
 
@@ -23,6 +23,5 @@ class Card extends BaseSchema implements ICard {
     description: string;
 }
 
-export const CardSchema = SchemaFactory.createForClass(Card);
 
-CardSchema.query
+SchemaFactory.createForClass(CardSchema);

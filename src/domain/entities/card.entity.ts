@@ -1,4 +1,4 @@
-import { IEntity } from './entity.base'
+import { Entity, IEntity } from './entity.base'
 export interface ICard extends IEntity {
   deskId: string
   name: string
@@ -7,13 +7,16 @@ export interface ICard extends IEntity {
   description: string
 }
 
-export class Card implements ICard {
-  id: string
+export class Card extends Entity<ICard> implements ICard {
   deskId: string
   name: string
   slug: string
   avatarUrl: string
   description: string
-  createdAt: Date
-  updatedAt: Date
+
+  static create(props: ICard) {
+    return new Card(props)
+  }
 }
+
+

@@ -1,27 +1,37 @@
-import { HydratedDocument, Model, Schema } from "mongoose";
-import { IEntity } from "src/domain/entities";
+import { Document, HydratedDocument, Model, Schema } from "mongoose";
+import { Card, IEntity } from "src/domain/entities";
 import { IRepository } from "src/domain/repositories/repository.interface";
 import { BaseSchema } from "../schemas";
 
-export abstract class BaseRepository<M extends HydratedDocument<BaseSchema>, E extends IEntity> implements IRepository<E> {
-    constructor(private _model: Model<BaseSchema>) {
+export abstract class BaseRepository<S extends BaseSchema, E extends IEntity> implements IRepository<E> {
+    constructor(private _model: Model<S>) {
     }
-    create(props: E): Promise<E> {
-        this._model.create(props);
-        throw new Error("Method not implemented.");
+    abstract convertToEntity(model: HydratedDocument<S>): E;
+    abstract convertToModelDocument(entity: Partial<E>): S;
+
+    async create(props: E): Promise<E> {
+        const document = await this._model.create(props);
+        return this.convertToEntity(document);
     }
-    update(id: string, props: Partial<E>): Promise<E> {
-        throw new Error("Method not implemented.");
+    async update(id: string, props: Partial<E>): Promise<E> {
+        const docUpdate = this.convertToModelDocument(props);
+        await this._model.updateOne({ _id: id }, docUpdate).exec();
+        const doc = await this.findById(id);
+        return doc;
     }
-    delete(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<void> {
+        const docResult = await this._model.findById(id)
+        if (docResult) {
+            await this._model.deleteOne({ _id: id }).exec();
+        }
     }
-    findById(id: string): Promise<E> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<E> {
+        const document = await this._model.findById(id).exec();
+        return this.convertToEntity(document);
     }
-    findAll(): Promise<E[]> {
-        throw new Error("Method not implemented.");
+    async findAll(): Promise<E[]> {
+        const documents = await this._model.find().exec();
+        return documents.map(document => this.convertToEntity(document));
     }
-    abstract convertToEntity(model: M): E;
-    abstract convertToModelDocument(entity: E): M;
+
 }
