@@ -1,10 +1,10 @@
 import { Module, Provider } from '@nestjs/common'
-import { InfrastructureModule } from 'src/infrastructure/infrastructure.module';
-import { AppModule } from './app';
+import { CheckHealthModule } from './check-health';
+import { DeskModule } from './desk/desk.module';
 
 const imports = [
-  InfrastructureModule,
-  AppModule
+  CheckHealthModule,
+  DeskModule
 ]
 const providers: Provider[] = []
 
@@ -15,4 +15,4 @@ const exportsProviders = []
   providers: providers,
   exports: exportsProviders,
 })
-export class RootModule { }
+export class APIModule { }

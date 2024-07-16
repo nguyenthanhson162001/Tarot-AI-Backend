@@ -1,4 +1,5 @@
-export const appPaths = {
+
+export const checkHealthPaths = {
     prefix: "/",
     checkHealth: {
         path: "check-health",

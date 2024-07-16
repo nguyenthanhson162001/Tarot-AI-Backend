@@ -6,10 +6,10 @@ import * as cookieParser from 'cookie-parser'
 import * as compression from 'compression'
 import * as morgan from 'morgan'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { RootModule } from '../modules/root.module'
 import { join } from 'path'
 import { Logger } from '@nestjs/common'
 import { ENVConfig } from 'src/infrastructure/env'
+import { RootModule } from './'
 
 export default class Server {
   private app: NestExpressApplication
@@ -66,15 +66,12 @@ export default class Server {
 
   public async start() {
     this.app.listen(ENVConfig.PORT, () => {
-      console.log('\n------------------------------------------------------------------\n')
-      console.log(`Server running on port ${ENVConfig.BASE_URL}`)
-
+      console.log('\n\n-------------------------------------------------------------------------------------------------------')
+      this.logger.verbose(`Server running on port ${ENVConfig.BASE_URL}`)
       if (ENVConfig.IS_SWAGGER_ENABLED) {
-        console.log(`Swagger running on ${ENVConfig.BASE_URL}/${ENVConfig.SWAGGER_PREFIX}`)
+        this.logger.verbose(`Swagger running on ${ENVConfig.BASE_URL}/${ENVConfig.SWAGGER_PREFIX}`)
       }
-
-      console.log('\n------------------------------------------------------------------\n')
+      console.log('-------------------------------------------------------------------------------------------------------\n')
     })
-    this.logger.error(`Server is listening at port:`)
   }
 }
